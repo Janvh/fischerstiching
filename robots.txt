@@ -1,0 +1,51 @@
+# Robots.txt für Fischerstiching 2029
+# Blockiert alle Crawler (Suchmaschinen und AI-Bots)
+
+# Alle Bots blockieren
+User-agent: *
+Disallow: /
+
+# Google
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Googlebot-Image
+Disallow: /
+
+User-agent: Googlebot-Video
+Disallow: /
+
+# Bing
+User-agent: Bingbot
+Disallow: /
+
+# OpenAI
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+# Anthropic
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# Common Crawl
+User-agent: CCBot
+Disallow: /
+
+# Andere AI-Crawler
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /

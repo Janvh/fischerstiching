@@ -1,0 +1,395 @@
+/* ========================================
+   Fischerstiching 2029 - Event Countdown
+   Countdown oben, Titel unten
+   ======================================== */
+
+/* CSS-Variablen */
+:root {
+    --primary-color: #6366f1;        /* Indigo/Blau */
+    --accent-color: #ec4899;         /* Pink (wie im Original) */
+    --background-dark: #0f0f1a;
+    --text-light: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --font-main: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+    --transition-smooth: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--background-dark);
+    color: var(--text-light);
+}
+
+/* ========================================
+   Video-Hintergrund
+   ======================================== */
+
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+    /* Fallback-Hintergrund falls Video nicht lädt */
+    background: url('video-poster.jpg') center center / cover no-repeat;
+    background-color: var(--background-dark);
+}
+
+#event-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Overlay für bessere Textlesbarkeit (noch dunkler) */
+.video-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 15, 26, 0.85) 0%,
+        rgba(15, 15, 26, 0.65) 30%,
+        rgba(15, 15, 26, 0.65) 70%,
+        rgba(15, 15, 26, 0.85) 100%
+    );
+    pointer-events: none;
+}
+
+/* ========================================
+   Ladebildschirm
+   ======================================== */
+
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Reload-Button (rechts oben)
+   ======================================== */
+
+.reload-button {
+    position: fixed;
+    top: clamp(1rem, 3vh, 2rem);
+    right: clamp(1rem, 3vw, 2rem);
+    z-index: 50;
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-smooth);
+}
+
+.reload-button.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.reload-button:hover {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.reload-button:active {
+    transform: scale(0.95);
+}
+
+.reload-button svg {
+    width: 22px;
+    height: 22px;
+    color: var(--text-light);
+    transition: transform 0.3s ease;
+}
+
+.reload-button:hover svg {
+    transform: rotate(-30deg);
+    color: var(--accent-color);
+}
+
+/* ========================================
+   Haupt-Inhalt
+   ======================================== */
+
+.content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(1.5rem, 4vh, 3rem) clamp(1rem, 4vw, 3rem);
+}
+
+/* ========================================
+   Countdown-Sektion (oben, mit Abstand)
+   ======================================== */
+
+.countdown-section {
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding-top: clamp(2rem, 8vh, 5rem);
+}
+
+.countdown-section.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* "Der Countdown läuft..." - groß mit Farbverlauf */
+.countdown-label {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Countdown-Timer Container */
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1.5rem);
+    flex-wrap: wrap;
+}
+
+/* Einzelne Zeiteinheit */
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: clamp(60px, 15vw, 120px);
+}
+
+/* Zeitwert (Zahlen) - Groß wie vorher */
+.time-value {
+    font-size: clamp(2.5rem, 10vw, 6rem);
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(180deg, var(--text-light) 0%, rgba(255, 255, 255, 0.6) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.3));
+    /* Gleichbreite Ziffern, damit der Countdown nicht springt */
+    font-variant-numeric: tabular-nums;
+}
+
+/* Beschriftung unter den Zahlen */
+.time-label {
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 0.5rem;
+}
+
+/* Doppelpunkt-Trenner */
+.time-separator {
+    font-size: clamp(2rem, 8vw, 4rem);
+    font-weight: 300;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* ========================================
+   Footer (Titel + Datum unten, mit Abstand)
+   ======================================== */
+
+.footer {
+    text-align: center;
+    padding-bottom: clamp(4rem, 12vh, 8rem);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: var(--transition-smooth);
+}
+
+.footer.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Titel: Mit Farbverlauf (lila/violett wie im Screenshot) */
+.title {
+    font-size: clamp(2rem, 8vw, 5rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
+}
+
+/* Datum */
+.date {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition-smooth);
+    transition-delay: 0.3s;
+}
+
+.footer.visible .date {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Tagline "Sei dabei." */
+.tagline {
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition-smooth);
+    transition-delay: 0.5s;
+}
+
+.footer.visible .tagline {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ========================================
+   Mobile-Optimierungen
+   ======================================== */
+
+@media (max-width: 768px) {
+    .countdown-timer {
+        gap: 0.5rem;
+    }
+
+    .time-separator {
+        display: none;
+    }
+
+    .time-unit {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem 0.75rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+@media (max-width: 480px) {
+    .time-unit {
+        min-width: 70px;
+    }
+
+    .reload-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .reload-button svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Landscape auf Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .content {
+        padding: 1rem 2rem;
+    }
+
+    .time-value {
+        font-size: 2.5rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .footer {
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* ========================================
+   Reduzierte Bewegung
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

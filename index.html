@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Crawler und AI-Bots blockieren -->
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <meta name="GPTBot" content="noindex, nofollow">
+    <title>Fischerstiching 2029 - Countdown</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="flavicon.jpeg">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts für moderne Typografie -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Video-Hintergrund -->
+    <div class="video-container">
+        <video id="event-video" muted playsinline preload="auto" poster="video-poster.jpg">
+            <source src="event-video-ios.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Ladebildschirm -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Reload-Button rechts oben -->
+    <button class="reload-button" id="reload-button" title="Neu starten">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+        </svg>
+    </button>
+
+    <!-- Haupt-Inhalt -->
+    <main class="content">
+        <!-- Countdown oben -->
+        <section class="countdown-section" id="countdown-section">
+            <p class="countdown-label">Der Countdown läuft...</p>
+            <div class="countdown-timer" id="countdown">
+                <div class="time-unit">
+                    <span class="time-value" id="days">000</span>
+                    <span class="time-label">Tage</span>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-unit">
+                    <span class="time-value" id="hours">00</span>
+                    <span class="time-label">Stunden</span>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-unit">
+                    <span class="time-value" id="minutes">00</span>
+                    <span class="time-label">Minuten</span>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-unit">
+                    <span class="time-value" id="seconds">00</span>
+                    <span class="time-label">Sekunden</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Titel + Datum unten -->
+        <footer class="footer" id="footer">
+            <h1 class="title">Fischerstiching 2029</h1>
+            <p class="date">06.10.2029 — 09.10.2029</p>
+            <p class="tagline">Sei dabei.</p>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
